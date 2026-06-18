@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang ="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>trang chu</title>
+    </head>
+    <body>
+        <form 
+            id="form-search"
+            method="GET"
+            action="/">
+            <label>From date </label>
+            <input 
+                type="text"
+                name="fromDate" 
+                id="fromDate"
+                value=""> 
+            <br>
+            <label>To Date:</label>
+            <input 
+                type="text"
+                name="toDate" 
+                id="toDate"     
+                value=""> 
+            <br>
+            <button 
+                type="submit">Tim
+            </button>
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên công ty</th>
+                    <th>Giá lúc open</th>
+                    <th>Giá high</th>
+                    <th>Giá low</th>
+                    <th>Giá lúc đóng</th>
+                    <th>Volume</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in stock %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.symbol }}</td>
+                    <td>{{ item.open }}</td>
+                    <td>{{ item.high }}</td>
+                    <td>{{ item.low }}</td>
+                    <td>{{ item.close }}</td>
+                    <td>{{ item.volume }}</td>
+                    <td>{{ item.datetime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </body>
+    <script src="../static/script.js"></script>
+</html>    
