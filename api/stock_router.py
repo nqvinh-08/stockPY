@@ -30,9 +30,9 @@ async def index(request: Request): #ham index()
                 algorithms=["HS256"]
             )
         except jwt.ExpiredSignatureError:
-            return RedirectResponse("/login",status_code=303)
-        except jwt.InvalidTokenError:
-            return RedirectResponse("/login",status_code=303)
+            return RedirectResponse("/login",status_code=303) #check signature
+        except jwt.InvalidTokenError: 
+            return RedirectResponse("/login",status_code=303) #check time cookie
         
         fromDate = request.query_params.get("fromDate")
         toDate = request.query_params.get("toDate")
