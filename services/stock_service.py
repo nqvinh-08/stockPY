@@ -1,7 +1,7 @@
 import logging
+import bcrypt
 from config.database import client
 from passlib.hash import bcrypt
-from fastapi.responses import RedirectResponse
 
 
 
@@ -24,6 +24,7 @@ def get_stocks_data(fromDate,toDate):
             {querywhere}
             ORDER BY datetime DESC
         """)
+        
         #convert dlieu sang list dictionary
         stocks = [
             dict(zip(result.column_names, row))
@@ -64,14 +65,11 @@ def post_register_user(username, password):
         select *from user
         where username ='{username}'
     """)
-    data = [
-        dict(zip(result.column_names, row))
-        for row in result.result_rows
-    ]
-    if data:
+    if result.result_rows:
         return False
-    hashPassword = bcrypt.hash(password)
     
+    hashPassword = bcrypt.hash(password)
+
     client.command(f"""
         insert into user(username, password)
         values('{username}','{hashPassword}')

@@ -1,13 +1,13 @@
 fastapi
 uvicorn
 sqlalchemy
-alembic
 python-dotenv
-python-jose
 passlib[bcrypt]
 python-multipart
 pydantic
 requests
 pandas
 clickhouse_connect
-psycopg2-binary
+PyJWT
+jinja2
+bcrypt

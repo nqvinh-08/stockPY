@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - clickhouse
+    environment:
+      PASSCLICKHOUSE: ${PASSCLICKHOUSE}
+      DATABASECLICKHOUSE: ${DATABASECLICKHOUSE}
+      USERCLICKHOUSE: ${USERCLICKHOUSE}
+      HOSTCLICKHOUSE: clickhouse
+      PORTCLICKHOUSE: ${PORTCLICKHOUSE}
+      URLAPI: ${URLAPI}
+      URLAPI2: ${URLAPI2}
+      JWT_SECRET: ${JWT_SECRET}
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    restart: always
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: ${DATABASECLICKHOUSE}
+      CLICKHOUSE_USER: ${USERCLICKHOUSE}
+      CLICKHOUSE_PASSWORD: ${PASSCLICKHOUSE}
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    restart: always
+volumes:
+  clickhouse_data:
