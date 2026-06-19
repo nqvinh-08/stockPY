@@ -2,7 +2,7 @@ import logging
 from passlib.context import CryptContext
 from config.database import client
 
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2","bcrypt"], deprecated="auto")
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def post_user_data(username,password):
         return False
     
     user = data[0]
-
+    print(user["password"])
     #check user
     isMatch = pwd_context.verify(
         password,
