@@ -1,9 +1,8 @@
 import logging
-import bcrypt
+from passlib.context import CryptContext
 from config.database import client
-from passlib.hash import bcrypt
 
-
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +38,10 @@ def get_stocks_data(fromDate,toDate):
 #LOGIN
 def post_user_data(username,password):
     #lay user
-    result = client.query(f"""
-        select *from user
-        where username ='{username}'
-    """)
+    result = client.query(
+        "select * from user where username = %(username)s",
+        parameters={"username": username} #fix or 1=1
+    )
     data = [
         dict(zip(result.column_names, row))
         for row in result.result_rows
@@ -53,7 +52,7 @@ def post_user_data(username,password):
     user = data[0]
 
     #check user
-    isMatch = bcrypt.verify(
+    isMatch = pwd_context.verify(
         password,
         user["password"]
     )
@@ -61,17 +60,18 @@ def post_user_data(username,password):
 
 # REGISTER
 def post_register_user(username, password):
-    result = client.query(f"""
-        select *from user
-        where username ='{username}'
-    """)
+    #check co user chua
+    result = client.query(
+        "select * from user where username = %(username)s",
+        parameters={"username": username}
+    )
     if result.result_rows:
         return False
-    
-    hashPassword = bcrypt.hash(password)
-
-    client.command(f"""
-        insert into user(username, password)
-        values('{username}','{hashPassword}')
-    """)
+    #hash pass
+    hashPassword = pwd_context.hash(password)
+    #luu user
+    client.command(
+        "insert into user(username, password) values(%(username)s, %(password)s)",
+        parameters={"username": username, "password": hashPassword}
+    )
     return True

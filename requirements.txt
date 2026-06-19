@@ -2,7 +2,7 @@ fastapi
 uvicorn
 sqlalchemy
 python-dotenv
-passlib[bcrypt]
+passlib[argon2]
 python-multipart
 pydantic
 requests
@@ -10,4 +10,3 @@ pandas
 clickhouse_connect
 PyJWT
 jinja2
-bcrypt
