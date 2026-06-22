@@ -15,23 +15,30 @@
 
 ## Project Structure
 
-    project/
-    |   
-    │── api/                # api
-    │── models/             # cau truc cua db
-    │── static/             # js,css
-    │── config/             # lien ket db
-    │
-    ├── schemas/            #
-    │
-    ├── services/           # logic
-    │
-    ├── views/              # FE(html)
-    ├── dockerfile/         # cach build app
-    ├── docker-compose.yml  # he thong
-    ├── requirements.txt    # thu vien
-    ├── .env.example/       # bien moi truong
-    └── main.py             # app     
+    project/  
+        api/
+        │    ├── config/database.py      → kết nối ClickHouse
+        │    ├── models/                 → định nghĩa bảng (user, stock)
+        │    ├── schemas/                → Pydantic schema (validate request/response)
+        │    ├── services/stock_service.py → logic: query DB, hash password...
+        │    ├── router/stock_router.py  → định nghĩa API endpoints (/login, /stocks...)
+        │    └── main.py                 → khởi động FastAPI, gắn router
+        │
+        app/
+        │    ├── views/                  → HTML templates (Jinja2)
+        │    │   ├── login.html
+        │    │   ├── register.html
+        │    │   └── index.html
+        │    ├── static/script.js        → JS chạy trên browser
+        │    ├── router/stock_router.py  → nhận request từ browser, gọi sang api
+        │    └── main.py                 → khởi động FastAPI, gắn router
+        │
+        ├── dockerfile.app/         # cach build app
+        ├── dockerfile.api/         # cach build api
+        ├── docker-compose.yml      # he thong
+        ├── requirements.txt        # thu vien
+        ├── .env.example/           # bien moi truong
+
 
 ## Features
 
