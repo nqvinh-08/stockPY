@@ -40,7 +40,7 @@ def post_user_data(username,password):
     #lay user
     result = client.query(
         "select * from user where username = %(username)s",
-        parameters={"username": username} #fix or 1=1
+        parameters={"username": username} #fix or 1=1(ko ghep chuoi truc tiep) , tach rieng sql va dlieu  
     )
     data = [
         dict(zip(result.column_names, row))

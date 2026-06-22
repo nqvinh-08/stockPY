@@ -3,8 +3,6 @@ from fastapi import FastAPI
 from api.stock_router import stock_router
 from fastapi.staticfiles import StaticFiles
 
-
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
