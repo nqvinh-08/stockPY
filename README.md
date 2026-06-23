@@ -17,10 +17,6 @@
 
     project/  
         api/
-        │    ├── config/database.py      → kết nối ClickHouse
-        │    ├── models/                 → định nghĩa bảng (user, stock)
-        │    ├── schemas/                → Pydantic schema (validate request/response)
-        │    ├── services/stock_service.py → logic: query DB, hash password...
         │    ├── router/stock_router.py  → định nghĩa API endpoints (/login, /stocks...)
         │    └── main.py                 → khởi động FastAPI, gắn router
         │
@@ -32,6 +28,11 @@
         │    ├── static/script.js        → JS chạy trên browser
         │    ├── router/stock_router.py  → nhận request từ browser, gọi sang api
         │    └── main.py                 → khởi động FastAPI, gắn router
+        business_data/
+        │    ├── config/            # ket noi db
+        │    ├── schemas/           
+        │    ├── models/            # dinh nghia bang
+        │    └── services/          # logic: query db,...
         │
         ├── dockerfile.app/         # cach build app
         ├── dockerfile.api/         # cach build api
@@ -54,6 +55,16 @@
     ### 4.Docker System
         + Container he thong
         + chay dong bo API + Database
+
+## WorkFlow
+
+    Frontend (FastAPI render Jinja)
+        ↓
+    Backend API (FastAPI /api)
+            ↓
+    Business layer (business_data)
+            ↓
+    ClickHouse / DB
 
 ## Installation
 
