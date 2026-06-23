@@ -2,25 +2,20 @@ import logging
 import jwt
 import os
 from fastapi import APIRouter, Request, HTTPException,Header
-from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from services.stock_service import get_stocks_data , post_user_data, post_register_user
+from services.stock_service import get_stocks_data , post_user_data, post_register_user, login_google
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from models.user import User
+
 
 logger = logging.getLogger(__name__)
 load_dotenv()
 stock_router = APIRouter()
 
-#nhan dlieu tu FE
-class LoginBody(BaseModel):
-    username: str
-    password: str
-
 # LOGIN /POST
 @stock_router.post("/login")
-async def login(body: LoginBody):
+async def login(body: User):
     try:
         #check user
         isMatch = post_user_data(body.username, body.password)
@@ -41,14 +36,9 @@ async def login(body: LoginBody):
         logger.error(f"loi lay stocks: {str(e)}", exc_info=True)
         raise
 
-#nhan dlieu tu fe
-class RegisterBody(BaseModel):
-    username: str
-    password: str
-
 # REGISTER /POST
 @stock_router.post("/register")
-async def register(body: RegisterBody):
+async def register(body: User):
     try:
         #them user
         success = post_register_user(body.username, body.password)
@@ -66,7 +56,7 @@ async def register(body: RegisterBody):
 async def index(
     fromDate: str = None,
     toDate: str = None,
-    authorization: str = Header(None)):
+    authorization: str = Header(None)): #ko bat buoc phai co fromdate/todate
     #check token
     if not authorization:
         raise HTTPException(status_code=401)
@@ -87,3 +77,22 @@ async def index(
         "stocks": stocks
     }
 
+class OauthLogin(BaseModel):
+    username: str
+    google_id: str
+    
+@stock_router.post("/oauth-login")
+async def oauth_login(payload: OauthLogin):
+    isMatch = login_google(payload.username, payload.google_id)
+    if not isMatch :
+        raise HTTPException(status_code=401)
+    #tao token
+    token = jwt.encode(
+        {
+            "username":payload.username,
+            "exp":datetime.utcnow() + timedelta(hours=1)
+        },
+        os.getenv("JWT_SECRET"),
+        algorithm="HS256"
+    )
+    return {"access_token":token}

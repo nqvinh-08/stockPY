@@ -12,5 +12,4 @@ app = FastAPI(title="Stock API", version="1.0.0") #tao server
 
 app.include_router(stock_router, prefix="/api") #dung router
 
-
 logger.info("FastAPI application started")

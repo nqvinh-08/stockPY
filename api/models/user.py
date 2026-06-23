@@ -1,8 +1,6 @@
-from sqlalchemy import Column, String
-from database import Base
 
-class User(Base):
-    __tablename__ = "user"
+from pydantic import BaseModel
 
-    username = Column(String)
-    password = Column(String)
+class User(BaseModel):
+    username:str
+    password: str

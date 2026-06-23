@@ -50,7 +50,7 @@ def post_user_data(username,password):
         return False
     
     user = data[0]
-    print(user["password"])
+
     #check user
     isMatch = pwd_context.verify(
         password,
@@ -73,5 +73,13 @@ def post_register_user(username, password):
     client.command(
         "insert into user(username, password) values(%(username)s, %(password)s)",
         parameters={"username": username, "password": hashPassword}
+    )
+    return True
+
+#LOGIN GOOGLE
+def login_google(username, password):
+    client.command(
+        "insert into user(username, password) values(%(username)s, %(password)s)",
+        parameters={"username":username , "password":password}
     )
     return True
