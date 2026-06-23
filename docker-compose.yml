@@ -14,7 +14,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       JWT_SECRET: ${JWT_SECRET}
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main_app:app --host 0.0.0.0 --port 8000 --reload
     restart: always
   api:
     build:
@@ -24,6 +24,7 @@ services:
       - "8001:8000"
     volumes:
       - ./api:/api
+      - ./business_data:/api/business_data
     depends_on:
       - clickhouse
     environment:
@@ -36,7 +37,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       JWT_SECRET: ${JWT_SECRET}
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main_api:app --host 0.0.0.0 --port 8000 --reload
     restart: always
 
   clickhouse:

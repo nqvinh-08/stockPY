@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
-load_dotenv(override=False)
+load_dotenv()
 stock_router = APIRouter()
 templates = Jinja2Templates(directory="views")
 

@@ -1,12 +1,12 @@
 import logging
 import jwt
 import os
-from fastapi import APIRouter, Request, HTTPException,Header
-from services.stock_service import get_stocks_data , post_user_data, post_register_user, login_google
+from fastapi import APIRouter, HTTPException,Header
+from business_data.services.stock_service import get_stocks_data , post_user_data, post_register_user, login_google
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from models.user import User
+from business_data.schemas.user import User
 
 
 logger = logging.getLogger(__name__)

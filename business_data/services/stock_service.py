@@ -1,6 +1,6 @@
 import logging
 from passlib.context import CryptContext
-from config.database import client
+from business_data.config.database import client
 
 pwd_context = CryptContext(schemes=["argon2","bcrypt"], deprecated="auto")
 
@@ -78,6 +78,12 @@ def post_register_user(username, password):
 
 #LOGIN GOOGLE
 def login_google(username, password):
+    result = client.query(
+        "select * from user where username = %(username)s",
+        parameters={"username": username}
+    )
+    if result.result_rows:
+        return False
     client.command(
         "insert into user(username, password) values(%(username)s, %(password)s)",
         parameters={"username":username , "password":password}
