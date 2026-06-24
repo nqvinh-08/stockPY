@@ -4,6 +4,7 @@
     - CRUD API
     - system(docker)
     - auth (JWT)
+    - ETL
     - data analysis(find: fromdate --> todate)
 ## Tech Stack
 
@@ -30,15 +31,21 @@
         │    └── main.py                 → khởi động FastAPI, gắn router
         business_data/
         │    ├── config/            # ket noi db
+        │    ├── etl/      
+        │    │      ├── crawler/     # laydlieu
+        │    │      ├── transform/   # lam sach
+        │    │      ├── load/        # luu vao db
+        │    │      └── pipeline.py  #crawler-->transform-->load
         │    ├── schemas/           
         │    ├── models/            # dinh nghia bang
         │    └── services/          # logic: query db,...
         │
+        ├── data/raw/               # dlieu goc 
         ├── dockerfile.app/         # cach build app
         ├── dockerfile.api/         # cach build api
         ├── docker-compose.yml      # he thong
         ├── requirements.txt        # thu vien
-        ├── .env.example/           # bien moi truong
+        └── .env.example/           # bien moi truong
 
 
 ## Features
@@ -55,22 +62,32 @@
     ### 4.Docker System
         + Container he thong
         + chay dong bo API + Database
+    ### 5.ETL
+        + lay db--> lam sach--> luu vao db
 
 ## WorkFlow
 
     Frontend (FastAPI render Jinja)
-        ↓
+            ↓
     Backend API (FastAPI /api)
             ↓
     Business layer (business_data)
             ↓
     ClickHouse / DB
+            ↑
+           Load
+            ↑
+        Transform
+            ↑
+        Crawler
 
 ## Installation
 
     ### 1. Clone project
         git clone https://github.com/nqvinh-08/stockPY.git
     ### 2. Cau hinh env
+    ### 3. Cach chay etl
+            python -m business_data.etl.pipeline
 
     #### Cach chay bang docker:
         ### 1. Run with Docker
@@ -86,7 +103,7 @@
             python3 -m venv venv
             source venv/bin/activate (join venv)
         ### 3. lenh chay:
-            uvicorn main:app --host 0.0.0.0 --port 8000 
+            uvicorn main_app:app --host 0.0.0.0 --port 8000 
 
 
 

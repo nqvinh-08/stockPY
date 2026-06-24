@@ -154,7 +154,7 @@ async def callback(code:str):
     response = requests.post(
         f"{API_URL}/api/oauth-login",
         json={
-            "username":user_info.get("name"),
+            "username":user_info.get("email"),
             "google_id": user_info.get("sub")
         }
     )

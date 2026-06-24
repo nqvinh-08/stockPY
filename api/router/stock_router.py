@@ -33,7 +33,7 @@ async def login(body: User):
         )
         return {"access_token":token}
     except Exception as e:
-        logger.error(f"loi lay stocks: {str(e)}", exc_info=True)
+        logger.error(f"loi: {str(e)}", exc_info=True)
         raise
 
 # REGISTER /POST
