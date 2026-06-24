@@ -83,7 +83,7 @@ def login_google(username, password):
         parameters={"username": username}
     )
     if result.result_rows:
-        return False
+        return True
     client.command(
         "insert into user(username, password) values(%(username)s, %(password)s)",
         parameters={"username":username , "password":password}
