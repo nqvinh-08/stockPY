@@ -1,11 +1,11 @@
 import logging
 from passlib.context import CryptContext
-from business_data.config.database import client
+from business_data.config.database import get_client
 
 pwd_context = CryptContext(schemes=["argon2","bcrypt"], deprecated="auto")
 
 logger = logging.getLogger(__name__)
-
+client = get_client()
 #STOCKS
 def get_stocks_data(fromDate,toDate):
     try:

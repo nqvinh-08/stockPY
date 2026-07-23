@@ -40,6 +40,9 @@
         │    ├── models/            # dinh nghia bang
         │    └── services/          # logic: query db,...
         │
+        airflow/
+        │   └── dags/                 
+        │        └── stock_dag.py
         ├── data/raw/               # dlieu goc 
         ├── dockerfile.app/         # cach build app
         ├── dockerfile.api/         # cach build api

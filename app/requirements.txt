@@ -11,3 +11,4 @@ clickhouse_connect
 PyJWT
 jinja2
 authlib
+apache-airflow
