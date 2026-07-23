@@ -21,10 +21,10 @@ def load_data(df):
             axis =1 # duyet theo tung dong
         )
     ] # co(True), khong co(false) --> ~ dao nguoc lai
+    
     # neu ko co dlieu moi
     if df.empty:
         print("ko co dlieu moi")
         return
-    df= df.sort_values("datetime", ascending=False).head(100) #sxep moi--> cu , lay 100 cai dau
     client.insert_df("stocks", df)
     print("them dlieu thanh cong")

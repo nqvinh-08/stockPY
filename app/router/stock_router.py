@@ -109,6 +109,7 @@ async def register(request:Request):
     
     return RedirectResponse("/login", status_code=303)
 
+# LOGIN_GOOGLE
 @stock_router.get("/login/google")
 async def login_google():
     #chuyen sang trang dang nhap gg
