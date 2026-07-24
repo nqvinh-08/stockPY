@@ -1,6 +1,6 @@
 import os
 import clickhouse_connect
-from untils.batch_insert import batch_insert
+from business_data.untils.batch_insert import batch_insert
 def load_data(df):
     client = clickhouse_connect.get_client(
         host = os.getenv("HOSTCLICKHOUSE"),
@@ -27,5 +27,6 @@ def load_data(df):
     if df.empty:
         print("ko co dlieu moi")
         return
-    batch_insert(client,"stocks", df)
+    
+    batch_insert(client,"stock_db.stocks", df)
     print("them dlieu thanh cong")
