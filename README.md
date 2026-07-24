@@ -7,6 +7,8 @@
     - ETL
     - data analysis(find: fromdate --> todate)
     - airflow
+    - superset
+    
 ## Tech Stack
 
     - Backend: Python(FastAPI)
@@ -55,10 +57,13 @@
         superset/                    
         │   └── dashboards/          
         │
-        ├── data/raw/               # dlieu goc 
+        ├── data/
+        │   ├── raw/                    #du lieu goc
+        │   └── dashboard_stock.png     #anh dashboard    
+        │
         ├── dockerfile.app/         # cach build app
         ├── dockerfile.api/         # cach build api
-        ├── dockerfile.api/         # cach build api
+        ├── dockerfile.airflow/     # cach build airflow
         ├── docker-compose.yml      # he thong
         └── .env.example/           # bien moi truong
 
@@ -92,13 +97,15 @@
             ↓
     Business layer (business_data)
             ↓
-    ClickHouse / DB
+    ClickHouse / DB --> Superset (Trực quan hóa dữ liệu)
             ↑
            Load
             ↑
         Transform
             ↑
         Crawler
+            ↑
+        AirFlow
 
 ## Installation
 
@@ -126,6 +133,7 @@
             source venv/bin/activate (join venv)
         ### 3. lenh chay:
             uvicorn main_app:app --host 0.0.0.0 --port 8000 
+            uvicorn main_api:app --host 0.0.0.0 --port 8000 
 
     ####Các cổng truy cập dịch vụ (Endpoints):
         Web App Frontend: http://localhost:8000
