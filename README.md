@@ -52,6 +52,9 @@
         │    └── dags/                 
         │        └── stock_dag.py
         │
+        superset/                    
+        │   └── dashboards/          
+        │
         ├── data/raw/               # dlieu goc 
         ├── dockerfile.app/         # cach build app
         ├── dockerfile.api/         # cach build api
