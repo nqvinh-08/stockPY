@@ -37,55 +37,66 @@ def get_stocks_data(fromDate,toDate):
 
 #LOGIN
 def post_user_data(username,password):
-    #lay user
-    result = client.query(
-        "select * from user where username = %(username)s",
-        parameters={"username": username} #fix or 1=1(ko ghep chuoi truc tiep) , tach rieng sql va dlieu  
-    )
-    data = [
-        dict(zip(result.column_names, row))
-        for row in result.result_rows
-    ]
-    if not data:
-        return False
-    
-    user = data[0]
+    try:
+        #lay user
+        result = client.query(
+            "select * from user where username = %(username)s",
+            parameters={"username": username} #fix or 1=1(ko ghep chuoi truc tiep) , tach rieng sql va dlieu  
+        )
+        data = [
+            dict(zip(result.column_names, row))
+            for row in result.result_rows
+        ]
+        if not data:
+            return False
+        
+        user = data[0]
 
-    #check user
-    isMatch = pwd_context.verify(
-        password,
-        user["password"]
-    )
-    return isMatch
+        #check user
+        isMatch = pwd_context.verify(
+            password,
+            user["password"]
+        )
+        return isMatch
+    except Exception as e:
+        logger.error(f"loi login {str(e)}", exc_info=True)
+        raise
 
 # REGISTER
 def post_register_user(username, password):
-    #check co user chua
-    result = client.query(
-        "select * from user where username = %(username)s",
-        parameters={"username": username}
-    )
-    if result.result_rows:
-        return False
-    #hash pass
-    hashPassword = pwd_context.hash(password)
-    #luu user
-    client.command(
-        "insert into user(username, password) values(%(username)s, %(password)s)",
-        parameters={"username": username, "password": hashPassword}
-    )
-    return True
+    try:
+        #check co user chua
+        result = client.query(
+            "select * from user where username = %(username)s",
+            parameters={"username": username}
+        )
+        if result.result_rows:
+            return False
+        #hash pass
+        hashPassword = pwd_context.hash(password)
+        #luu user
+        client.command(
+            "insert into user(username, password) values(%(username)s, %(password)s)",
+            parameters={"username": username, "password": hashPassword}
+        )
+        return True
+    except Exception as e:
+        logger.error(f"loi register {str(e)}", exc_info=True)
 
 #LOGIN GOOGLE
 def login_google(username, password):
-    result = client.query(
-        "select * from user where username = %(username)s",
-        parameters={"username": username}
-    )
-    if result.result_rows:
+    try:
+        result = client.query(
+            "select * from user where username = %(username)s",
+            parameters={"username": username}
+        )
+        if result.result_rows:
+            return True
+        client.command(
+            "insert into user(username, password) values(%(username)s, %(password)s)",
+            parameters={"username":username , "password":password}
+        )
         return True
-    client.command(
-        "insert into user(username, password) values(%(username)s, %(password)s)",
-        parameters={"username":username , "password":password}
-    )
-    return True
+    except Exception as e:
+        logger.error(f"loi login google {str(e)}" , exc_info=True)
+        raise

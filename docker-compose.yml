@@ -90,10 +90,12 @@ services:
       AIRFLOW_ADMIN_FIRSTNAME: ${AIRFLOW_ADMIN_FIRSTNAME}
       AIRFLOW_ADMIN_LASTNAME: ${AIRFLOW_ADMIN_LASTNAME}
       AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
+      PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
 
     volumes:
       - .:/opt/airflow/project
       - ./airflow/dags:/opt/airflow/dags
+      - /home/vinh/Documents/StockThucTap:/opt/airflow/StockThucTap
     command: >
       bash -c "
       airflow db migrate &&
@@ -122,10 +124,11 @@ services:
       HOSTCLICKHOUSE: clickhouse
       PORTCLICKHOUSE: ${PORTCLICKHOUSE}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
-      PYTHONPATH: /opt/airflow/project
+      PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
     volumes:
       - .:/opt/airflow/project
       - ./airflow/dags:/opt/airflow/dags
+      - /home/vinh/Documents/StockThucTap:/opt/airflow/StockThucTap
     command: airflow webserver
     restart: always
 
@@ -144,10 +147,11 @@ services:
       HOSTCLICKHOUSE: clickhouse
       PORTCLICKHOUSE: ${PORTCLICKHOUSE}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
-      PYTHONPATH: /opt/airflow/project
+      PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
     volumes:
       - .:/opt/airflow/project
       - ./airflow/dags:/opt/airflow/dags
+      - /home/vinh/Documents/StockThucTap:/opt/airflow/StockThucTap
     command: airflow scheduler
     restart: always
 

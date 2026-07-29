@@ -88,26 +88,31 @@ async def login(request:Request):
             RedirectResponse: Chuyển hướng đến trang chủ nếu thành công,
             hoặc quay lại trang đăng nhập nếu thất bại.
     """
-    form = await request.form()
-    response = requests.post(
-        f"{API_URL}/api/login",
-        json={
-            "username": form.get("username"),
-            "password": form.get("password")
-        }
-    )
-    if response.status_code != 200: 
-        return RedirectResponse("/login", status_code=303)
-    # nhan tokenn --> luu vao cookie
-    token = response.json()["access_token"]
-    res= RedirectResponse("/",status_code=303)
-    res.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True
-    )
-    return res
+    try:
+        form = await request.form()
+        response = requests.post(
+            f"{API_URL}/api/login",
+            json={
+                "username": form.get("username"),
+                "password": form.get("password")
+            }
+        )
+        if response.status_code != 200: 
+            return RedirectResponse("/login", status_code=303)
+        # nhan tokenn --> luu vao cookie
+        token = response.json()["access_token"]
+        res= RedirectResponse("/",status_code=303)
+        res.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True
+        )
+        return res
+    except Exception as e:
+        logger.error(f"loi: {str(e)}", exc_info=True)
+        raise
 
+    
 # REGISTER /GET
 @stock_router.get("/register")
 async def register_page(request:Request):
@@ -132,19 +137,23 @@ async def register(request:Request):
             RedirectResponse: Chuyển đến trang đăng nhập nếu đăng ký thành công,
             hoặc quay lại trang đăng ký nếu thất bại.
     """
-    form = await request.form()
+    try:
+        form = await request.form()
 
-    response = requests.post(
-        f"{API_URL}/api/register",
-        json={
-            "username": form.get("username"),
-            "password": form.get("password")
-        }
-    )
-    if response.status_code != 200: 
-        return RedirectResponse("/register", status_code=303)
-    
-    return RedirectResponse("/login", status_code=303)
+        response = requests.post(
+            f"{API_URL}/api/register",
+            json={
+                "username": form.get("username"),
+                "password": form.get("password")
+            }
+        )
+        if response.status_code != 200: 
+            return RedirectResponse("/register", status_code=303)
+        
+        return RedirectResponse("/login", status_code=303)
+    except Exception as e:
+        logger.error(f"loi: {str(e)}", exc_info=True)
+        raise
 
 # LOGIN_GOOGLE
 @stock_router.get("/login/google")
@@ -182,50 +191,54 @@ async def callback(code:str):
             RedirectResponse: Chuyển đến trang chủ nếu xác thực thành công,
             hoặc quay lại trang đăng nhập nếu xảy ra lỗi.
     """
-    #doi code lay access token 
-    token_response = requests.post(
-        "https://oauth2.googleapis.com/token",
-        data={
-            "client_id": GOOGLE_CLIENT_ID,
-            "client_secret": GOOGLE_CLIENT_SECRET,
-            "code": code,
-            "grant_type":"authorization_code",
-            "redirect_uri":"http://localhost:8000/auth/google/callback"
-        }
-    )
-    if token_response.status_code != 200: 
-        return RedirectResponse("/login", status_code=303)
-    
-    google_token = token_response.json()["access_token"]
+    try:
+        #doi code lay access token 
+        token_response = requests.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "code": code,
+                "grant_type":"authorization_code",
+                "redirect_uri":"http://localhost:8000/auth/google/callback"
+            }
+        )
+        if token_response.status_code != 200: 
+            return RedirectResponse("/login", status_code=303)
+        
+        google_token = token_response.json()["access_token"]
 
-    #lay thong tin user
-    user_response= requests.get(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        headers={
-            "Authorization": f"Bearer {google_token}"
-        },
-    )
-    if user_response.status_code !=200:
-        return RedirectResponse("/login", status_code=303)
-    user_info = user_response.json()
+        #lay thong tin user
+        user_response= requests.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={
+                "Authorization": f"Bearer {google_token}"
+            },
+        )
+        if user_response.status_code !=200:
+            return RedirectResponse("/login", status_code=303)
+        user_info = user_response.json()
 
-    #chuyen dlieu sang api
-    response = requests.post(
-        f"{API_URL}/api/oauth-login",
-        json={
-            "username":user_info.get("email"),
-            "google_id": user_info.get("sub")
-        }
-    )
-    if response.status_code !=200:
-        return RedirectResponse("/login", status_code=303)
+        #chuyen dlieu sang api
+        response = requests.post(
+            f"{API_URL}/api/oauth-login",
+            json={
+                "username":user_info.get("email"),
+                "google_id": user_info.get("sub")
+            }
+        )
+        if response.status_code !=200:
+            return RedirectResponse("/login", status_code=303)
 
-    # nhan tokenn --> luu vao cookie
-    token = response.json()["access_token"]
-    res= RedirectResponse("/",status_code=303)
-    res.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True
-    )
-    return res
+        # nhan tokenn --> luu vao cookie
+        token = response.json()["access_token"]
+        res= RedirectResponse("/",status_code=303)
+        res.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True
+        )
+        return res
+    except Exception as e:
+        logger.error(f"loi: {str(e)}", exc_info=True)
+        raise

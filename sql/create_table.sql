@@ -17,7 +17,7 @@ create table stock_db.user(
 	password String
 )
 engine = MergeTree()
-order by username
+order by username;
 
 ----data mart-------
 create table mart_stock
@@ -27,4 +27,4 @@ create table mart_stock
 	avg_range float
 )
 engine = SummingMergeTree()
-order by datetime
+order by datetime;

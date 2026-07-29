@@ -34,11 +34,11 @@ async def login(body: User):
         token = jwt.encode(
             {
                 "username":body.username,
-                "exp":datetime.utcnow() + timedelta(hours=1)
+                "exp":datetime.now() + timedelta(hours=1)
             },
             os.getenv("JWT_SECRET"),
             algorithm="HS256"
-        )
+        )   
         return {"access_token":token}
     except Exception as e:
         logger.error(f"loi: {str(e)}", exc_info=True)
@@ -59,11 +59,9 @@ async def register(body: User):
         success = post_register_user(body.username, body.password)
         if not success:
             raise HTTPException(status_code=400)
-        
-        return {"message":"success"}
     
     except Exception as e:
-        logger.error(f"loi lay stocks: {str(e)}", exc_info=True)
+        logger.error(f"loi: {str(e)}", exc_info=True)
         raise
 
 #STOCK /GET

@@ -114,7 +114,7 @@
             cd stockPY
     ### 2. Cau hinh env
     ### 3. Cach chay etl
-            python -m business_data.etl.pipeline
+            python3 -m business_data.etl.pipeline
 
 
     #### Cach chay bang docker:
