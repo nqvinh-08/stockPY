@@ -1,4 +1,7 @@
 services:
+  # ====================================================
+  # APP
+  # ====================================================
   app:
     build: 
       context: . #lay code tu thu muc hien tai
@@ -16,6 +19,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     command: uvicorn main_app:app --host 0.0.0.0 --port 8000 --reload
     restart: always
+  # ====================================================
+  # API
+  # ====================================================
   api:
     build:
       context: .
@@ -41,7 +47,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     command: uvicorn main_api:app --host 0.0.0.0 --port 8000 --reload
     restart: always
-
+  # ====================================================
+  # CLICKHOUSE
+  # ====================================================
   clickhouse:
     image: clickhouse/clickhouse-server:latest #lay tu docker-hub
     ports:
@@ -56,7 +64,7 @@ services:
     restart: always
 
   # ====================================================
-  # AIRFLOW METADATA DATABASE
+  # AIRFLOW DATABASE
   # ====================================================
   airflow-db:
     image: postgres:17
@@ -83,13 +91,14 @@ services:
       - airflow-db
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
-
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
       AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
       AIRFLOW_ADMIN_FIRSTNAME: ${AIRFLOW_ADMIN_FIRSTNAME}
       AIRFLOW_ADMIN_LASTNAME: ${AIRFLOW_ADMIN_LASTNAME}
       AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
+      # khi import se lay tu project hienj tai va StockThucTap
       PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
 
     volumes:
@@ -115,6 +124,7 @@ services:
       context: .
       dockerfile: dockerfile.airflow
     container_name: airflow-webserver
+    hostname: airflow-webserver
     depends_on:
       - airflow-db
       - airflow-init
@@ -124,6 +134,7 @@ services:
       HOSTCLICKHOUSE: clickhouse
       PORTCLICKHOUSE: ${PORTCLICKHOUSE}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY}
       PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
     volumes:
       - .:/opt/airflow/project
@@ -140,13 +151,18 @@ services:
       context: .
       dockerfile: dockerfile.airflow
     container_name: airflow-scheduler
+    hostname: airflow-scheduler
     depends_on:
       - airflow-db
       - airflow-init
+      - kafka
     environment:
       HOSTCLICKHOUSE: clickhouse
       PORTCLICKHOUSE: ${PORTCLICKHOUSE}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
       PYTHONPATH: /opt/airflow/project:/opt/airflow/StockThucTap
     volumes:
       - .:/opt/airflow/project
@@ -155,6 +171,68 @@ services:
     command: airflow scheduler
     restart: always
 
+  # ====================================================
+  # KAFKA
+  # ====================================================
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka-node
+    ports:
+      - "9092:9092"
+    environment:
+      # Cấu hình KRaft
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+  # ====================================================
+  # KAFKA-UI
+  # ====================================================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "Local-Cluster"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+    depends_on:
+      - kafka
+
+  # ====================================================
+  # KAFKA-UI
+  # ====================================================
+  kafka-consumer:
+    build: 
+      context: . 
+      dockerfile: dockerfile.consumer
+    container_name: kafka-consumer
+    volumes:
+      - .:/app
+    depends_on:
+      - kafka
+      - clickhouse
+    environment:
+      HOSTCLICKHOUSE: clickhouse
+      PORTCLICKHOUSE: ${PORTCLICKHOUSE}
+      DATABASECLICKHOUSE: ${DATABASECLICKHOUSE}
+      USERCLICKHOUSE: ${USERCLICKHOUSE}
+      PASSCLICKHOUSE: ${PASSCLICKHOUSE}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
+    command: python -m business_data.etl.kafka.consumer
+    restart: always
 volumes:
   clickhouse_data:
   airflow_postgres:

@@ -7,7 +7,7 @@ from load.load_clickhouse import sync
 with DAG(
     dag_id="sync_pg_clickhouse",
     start_date=datetime(2026,1,1),
-    schedule="0 8 * * *",
+    schedule="@daily", # 0 1 * * * 1h UTC =8h sang 
     catchup=False,
 ):
     PythonOperator(

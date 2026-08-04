@@ -1,6 +1,6 @@
 import logging
 from passlib.context import CryptContext
-from business_data.config.database import get_client
+from business_data.config_db.database_clickhouse import get_client
 
 pwd_context = CryptContext(schemes=["argon2","bcrypt"], deprecated="auto")
 

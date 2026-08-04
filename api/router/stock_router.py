@@ -4,13 +4,14 @@ import os
 from fastapi import APIRouter, HTTPException,Header
 from business_data.services.stock_service import get_stocks_data , post_user_data, post_register_user, login_google
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
+import dotenv
 from pydantic import BaseModel
 from business_data.schemas.user import User
-
+from dotenv import load_dotenv
+load_dotenv()
 
 logger = logging.getLogger(__name__)
-load_dotenv()
+dotenv.load_dotenv()
 stock_router = APIRouter()
 
 # LOGIN /POST
