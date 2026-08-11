@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas as pd 
 def clean_data(data):
     stocks=[]
     time_series= data["Time Series (Daily)"] #lay du lieu
